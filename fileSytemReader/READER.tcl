@@ -20,26 +20,45 @@ set a 100
 # puts "value of a is : $a"
 
 set fp [open "input.txt" r]
+  foreach {StringLine primeNumberLine nonPrimeNumber invalidLine sumFirstTwoInt Linecounter LineWithValuCounter LineWithOutValuCounter firstThreeString}  {0 0 0 0 0 0 0 0  ""} break
 
-while { [gets $fp data] >= 0 } {
-   
-    if {[string match -nocase {[A-Za-z]*} $data]} {
-        puts $data;
+puts $StringLine;
 
-    }
-  
-    set numbers [regexp -all -inline -- {[0-9]+} $data];
-  
-    set len [string length $numbers];
-    
+
+while { [gets $fp line] >= 0 } {
    
-if {$len > 0 } {
-   
-   scan $numbers %d myInteger
-   set d [expr "$myInteger%2"]
-   puts $d
+    if {[string match -nocase {[A-Za-z]*} $line]} {
+        if { $Linecounter < 3 } {        append firstThreeString " " $line; }
+        incr Linecounter;
+
+        puts $line;
+        set valueOfLineAsString [regexp -all -inline -- {[0-9]+} $line];
+        set lengthValueOfLine [string length $valueOfLineAsString];    
+        if {$lengthValueOfLine > 0 } {
+            # to convert to int
+            scan $valueOfLineAsString %d valueOfLineAsInteger  
+            set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"]
+            if {$LineWithValuCounter < 2 } {
+                set  sumFirstTwoInt [expr "$valueOfLineAsInteger+$sumFirstTwoInt"]
+            }
+            incr LineWithValuCounter
+            if {$ModulusOfIntegerValue == 1 } {
+                incr primeNumberLine;
+                puts [expr "$valueOfLineAsInteger/2"]
+            } elseif { $ModulusOfIntegerValue == 0 } {puts [expr "$valueOfLineAsInteger*3.25"];
+            incr nonPrimeNumber;}
+        } else {    incr StringLine}
+    } else { puts "INVALID LINE";
+             incr invalidLine;
+            }
+
+
 }
+puts "number od StringLine : $StringLine";
+puts "number od primeNumberLine : $primeNumberLine";
+puts "number od nonPrimeNumber : $nonPrimeNumber";
+puts "number od invalidLine : $invalidLine";
+puts "sum of first two num  : $sumFirstTwoInt";
+puts "$firstThreeString";
 
-
-      }
 close $fp;
