@@ -20,9 +20,9 @@ set a 100
 # puts "value of a is : $a"
 
 set fp [open "input.txt" r]
-  foreach {StringLine primeNumberLine nonPrimeNumber invalidLine sumFirstTwoInt Linecounter LineWithValuCounter LineWithOutValuCounter firstThreeString}  {0 0 0 0 0 0 0 0  ""} break
+  foreach {StringLine primeNumberLine nonPrimeNumber invalidLine sumFirstTwoInt Linecounter LineWithValuCounter LineWithOutValuCounter firstThreeString MaxValue LineWithMaxValue minimumNonEmptyLineLength }  {0 0 0 0 0 0 0 0  "" 1 ""  +infinity} break
 
-puts $StringLine;
+puts $MaxValue;
 
 
 while { [gets $fp line] >= 0 } {
@@ -32,12 +32,21 @@ while { [gets $fp line] >= 0 } {
         incr Linecounter;
 
         puts $line;
+        set lengthOfLine [string length $line];
+         if { $minimumNonEmptyLineLength > $lengthOfLine  } {
+           set minimumNonEmptyLineLength  $lengthOfLine;
+         }
+
         set valueOfLineAsString [regexp -all -inline -- {[0-9]+} $line];
         set lengthValueOfLine [string length $valueOfLineAsString];    
         if {$lengthValueOfLine > 0 } {
             # to convert to int
             scan $valueOfLineAsString %d valueOfLineAsInteger  
-            set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"]
+            set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"];
+             if { $valueOfLineAsInteger > $MaxValue } {
+                 set  MaxValue $valueOfLineAsInteger;
+                 set  LineWithMaxValue $line;
+               }
             if {$LineWithValuCounter < 2 } {
                 set  sumFirstTwoInt [expr "$valueOfLineAsInteger+$sumFirstTwoInt"]
             }
@@ -51,6 +60,10 @@ while { [gets $fp line] >= 0 } {
     } else { puts "INVALID LINE";
              incr invalidLine;
             }
+                  
+            puts "$line [string length $line] ";
+
+
 
 
 }
@@ -59,6 +72,7 @@ puts "number od primeNumberLine : $primeNumberLine";
 puts "number od nonPrimeNumber : $nonPrimeNumber";
 puts "number od invalidLine : $invalidLine";
 puts "sum of first two num  : $sumFirstTwoInt";
-puts "$firstThreeString";
-
+puts " first three $firstThreeString";
+puts " LineWithMaxValue $LineWithMaxValue";
+puts " minimumNonEmptyLineLength $minimumNonEmptyLineLength";
 close $fp;
