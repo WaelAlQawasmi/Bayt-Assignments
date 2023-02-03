@@ -11,13 +11,14 @@
  set LineWithMaxValue "";
  set minimumNonEmptyLineLength +infinity;
 
+# method check if the fist line is string char
 proc isStartWIthString { line } {
     if { [string match -nocase {[A-Za-z]*} $line]} {
-       return 1;
+        return 1;
     }
     return 0;
 }
-
+# concatenation of the first 3 lines starting with the string characters
 proc setFirstThreeString { line } {
     global Linecounter;
     global firstThreeString;
@@ -25,32 +26,47 @@ proc setFirstThreeString { line } {
     if {  $Linecounter < 4 } { append firstThreeString " " $line ; }
 }
 
+# set the length of Minimum Non Empty Line 
+
 proc setMinimumNonEmptyLineLength { line } {
     global minimumNonEmptyLineLength;
     set lengthOfLine [string length $line];
     if { $minimumNonEmptyLineLength > $lengthOfLine  } {
-           set minimumNonEmptyLineLength  $lengthOfLine;
+        set minimumNonEmptyLineLength  $lengthOfLine;
     }
 }
 
 
 proc SetMaxValue { valueOfLineAsInteger line } {
-  global MaxValue;
-  global LineWithMaxValue
-  if { $valueOfLineAsInteger > $MaxValue } {
-            set  MaxValue $valueOfLineAsInteger;
-            set  LineWithMaxValue $line;
-  }  
+    global MaxValue;
+    global LineWithMaxValue
+    if { $valueOfLineAsInteger > $MaxValue } {
+        set  MaxValue $valueOfLineAsInteger;
+        set  LineWithMaxValue $line;
+    }  
 }
-
+# method to sum the first two integer 
 proc setSumFirstTwoInt { valueOfLineAsInteger } {
-  global sumFirstTwoInt;
-  global LineWithValuCounter
-  if { $LineWithValuCounter < 2 } {
-            set  sumFirstTwoInt [expr "$valueOfLineAsInteger+$sumFirstTwoInt"]
-   }
+    global sumFirstTwoInt;
+    global LineWithValuCounter
+    if { $LineWithValuCounter < 2 } {
+        set  sumFirstTwoInt [expr "$valueOfLineAsInteger+$sumFirstTwoInt"]
+    }
 }
 
+proc setModulusOfIntegerValue { valueOfLineAsInteger } {
+    global primeNumberLine;
+    global nonPrimeNumber;
+    set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"];
+    if {$ModulusOfIntegerValue == 1 } {
+        incr primeNumberLine;
+        puts [expr "$valueOfLineAsInteger/2"]
+        } elseif { $ModulusOfIntegerValue == 0 } {
+                puts [expr "$valueOfLineAsInteger*3.25"];
+                incr nonPrimeNumber;}
+}
+
+# method to get the value in the line 
 proc setLineValue { line } {
     global StringLine
     global LineWithValuCounter
@@ -59,56 +75,51 @@ proc setLineValue { line } {
     if {$lengthValueOfLine > 0 } {
         # to convert to int
         scan $valueOfLineAsString %d valueOfLineAsInteger  
-        set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"];
-         SetMaxValue $valueOfLineAsInteger $line;
-         setSumFirstTwoInt $valueOfLineAsInteger
+        # call methods for statstics
+        SetMaxValue $valueOfLineAsInteger $line;
+        setSumFirstTwoInt $valueOfLineAsInteger
         incr LineWithValuCounter
-        if {$ModulusOfIntegerValue == 1 } {
-            incr primeNumberLine;
-            puts [expr "$valueOfLineAsInteger/2"]
-        } elseif { $ModulusOfIntegerValue == 0 } {puts [expr "$valueOfLineAsInteger*3.25"];
-                  incr nonPrimeNumber;}
+        setModulusOfIntegerValue $valueOfLineAsInteger ; 
         } else {    incr StringLine}
 }
 
-
 proc readFile { filename } {
-   global Linecounter
-   global invalidLine;
-   set fp [open $filename r];
-   while { [gets $fp line] >= 0 } {
-   
-    if {[isStartWIthString $line] } {
-        setFirstThreeString $line;
-        puts $line;
-        setMinimumNonEmptyLineLength $line;
-        setLineValue $line;
-       
-    } else { puts "INVALID LINE";
-             incr invalidLine;
-            }    
-    puts "$line [string length $line] ";
-  }
+    global Linecounter
+    global invalidLine;
+    set fp [open $filename r];
+    # read line by line
+    while { [gets $fp line] >= 0 } {
+        if {[isStartWIthString $line] } {
+            setFirstThreeString $line;
+            puts $line;
+            setMinimumNonEmptyLineLength $line;
+            setLineValue $line;
+        } else {
+            puts "INVALID LINE";
+            incr invalidLine;
+          }    
+        puts "$line [string length $line] ";
+    }
   close $fp; 
 }
 
 
 
-
+# setFileName
 set filename input.txt;
+# check if the file exist then read file
 set fexist [file exist $filename];
 if { $fexist == 1 } {
-readFile $filename ;
+    readFile $filename ;
 }
 
-
-puts "number od StringLine : $StringLine";
-puts "number od primeNumberLine : $primeNumberLine";
-puts "number od nonPrimeNumber : $nonPrimeNumber";
-puts "number od invalidLine : $invalidLine";
+# report 
+puts "number of StringLine : $StringLine";
+puts "number of primeNumberLine : $primeNumberLine";
+puts "number of nonPrimeNumber : $nonPrimeNumber";
+puts "number of invalidLine : $invalidLine";
 puts "sum of first two num  : $sumFirstTwoInt";
-puts " first three  $firstThreeString";
-puts " first three  $Linecounter";
+puts "first three string  $firstThreeString";
 puts " LineWithMaxValue $LineWithMaxValue";
 puts " minimumNonEmptyLineLength $minimumNonEmptyLineLength";
 
