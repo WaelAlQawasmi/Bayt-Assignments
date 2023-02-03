@@ -13,13 +13,14 @@
 
 # method check if the fist line is string char
 proc isStartWIthString { line } {
-    if { [string match -nocase {[A-Za-z]*} $line]} {
+    
+    if { [string match -nocase {[A-Za-z]*} $line] } {
         return 1;
     }
     return 0;
 }
 # concatenation of the first 3 lines starting with the string characters
-proc setFirstThreeString { line } {
+proc setFirstThreeString { line } { 
     global Linecounter;
     global firstThreeString;
     incr Linecounter;
