@@ -11,13 +11,50 @@
  set LineWithMaxValue "";
  set minimumNonEmptyLineLength +infinity;
 
-# method check if the fist line is string char
+# to check if the int is prime
+ proc isPrime { int }  {
+    set max [expr wide(sqrt(abs($int)))]
+    if {$int%2==0} {  return 0;}
+    for {set i 3} {$i<=$max} {incr i 2} {
+        if {$int%$i==0} {   return 0}
+    }
+    return 1
+}
+
+
+# method check if the fist line is string char or floats
 proc isStartWIthString { line } {
-    
-    if { [string match -nocase {[A-Za-z]*} $line] } {
+    set doubleValue "null"
+    regexp {[0-9]+\.[0-9]+} $line doubleValue
+    if { [string match -nocase {[A-Za-z]*} $line] || $doubleValue != "null"} {
         return 1;
     }
     return 0;
+}
+
+# method to check if the line containe int value
+proc isPresentInteger { line } {
+    set int "null"
+    regexp {(?:^|[^0-9.])(\d+)(?!\.?\d)} $line int
+    if { $int == "null" } {
+        return 0
+    }
+    return 1
+}
+
+# methode to check if the line contain string Characters
+proc isContaningString { line } {
+    global StringLine;
+    set string "null"
+    regexp {[A-Za-z]} $line string
+    if { $string == "null" } {
+        return 0
+    }
+    incr StringLine;
+    setMinimumNonEmptyLineLength $line;
+
+    return 1
+
 }
 # concatenation of the first 3 lines starting with the string characters
 proc setFirstThreeString { line } { 
@@ -55,14 +92,13 @@ proc setSumFirstTwoInt { valueOfLineAsInteger } {
     }
 }
 
-proc setModulusOfIntegerValue { valueOfLineAsInteger } {
+proc setPrimeIntegerValue { valueOfLineAsInteger } {
     global primeNumberLine;
     global nonPrimeNumber;
-    set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"];
-    if {$ModulusOfIntegerValue == 1 } {
+    if {[isPrime $valueOfLineAsInteger]} {
         incr primeNumberLine;
         puts [expr "$valueOfLineAsInteger/2"]
-        } elseif { $ModulusOfIntegerValue == 0 } {
+        } else {
                 puts [expr "$valueOfLineAsInteger*3.25"];
                 incr nonPrimeNumber;}
 }
@@ -75,12 +111,24 @@ proc setLineValue { line } {
     set lengthValueOfLine [string length $valueOfLineAsString];    
     if {$lengthValueOfLine > 0 } {
         # to convert to int
-        scan $valueOfLineAsString %d valueOfLineAsInteger  
+        # scan $valueOfLineAsString %d valueOfLineAsInteger  
+       set RE {([-+]?[0-9]*\.?[0-9]*)}
+
+        set matches [regexp -all -inline -- $RE $line]
+        foreach {- valueOfLineAsInteger} $matches {
+            if {$valueOfLineAsInteger != ""} {
+            puts $valueOfLineAsInteger
+            SetMaxValue $valueOfLineAsInteger $line;
+            setSumFirstTwoInt $valueOfLineAsInteger
+            setPrimeIntegerValue $valueOfLineAsInteger ; 
+            }
+        }
+
+         
         # call methods for statstics
-        SetMaxValue $valueOfLineAsInteger $line;
-        setSumFirstTwoInt $valueOfLineAsInteger
+        
         incr LineWithValuCounter
-        setModulusOfIntegerValue $valueOfLineAsInteger ; 
+        
         } else {    incr StringLine}
 }
 
@@ -93,13 +141,17 @@ proc readFile { filename } {
         if {[isStartWIthString $line] } {
             setFirstThreeString $line;
             puts $line;
-            setMinimumNonEmptyLineLength $line;
+        } 
+        isContaningString $line;
+        if { [isPresentInteger $line] } {
+            
             setLineValue $line;
-        } else {
+        } 
+        if {![isStartWIthString $line] && ![isPresentInteger $line] } {
             puts "INVALID LINE";
             incr invalidLine;
           }    
-        puts "$line [string length $line] ";
+        puts "$line . [string length $line] ";
     }
   close $fp; 
 }
@@ -111,11 +163,13 @@ set filename input.txt;
 # check if the file exist then read file
 set fexist [file exist $filename];
 if { $fexist == 1 } {
+
+
     readFile $filename ;
 }
 
 # report 
-puts "number of StringLine : $StringLine";
+puts "number of line that containing string : $StringLine";
 puts "number of primeNumberLine : $primeNumberLine";
 puts "number of nonPrimeNumber : $nonPrimeNumber";
 puts "number of invalidLine : $invalidLine";
