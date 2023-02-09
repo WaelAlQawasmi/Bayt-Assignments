@@ -11,18 +11,18 @@
  set LineWithMaxValue "";
  set minimumNonEmptyLineLength +infinity;
 
- proc isPrime { n }  {
-    set max [expr wide(sqrt($n))]
-    if {$n%2==0} { puts "$n  not prime"; return 0;}
+# to check if the int is prime
+ proc isPrime { int }  {
+    set max [expr wide(sqrt(abs($int)))]
+    if {$int%2==0} {  return 0;}
     for {set i 3} {$i<=$max} {incr i 2} {
-        if {$n%$i==0} {  puts "$n  not prime"; return 0}
+        if {$int%$i==0} {   return 0}
     }
-    puts "$n prime";
     return 1
 }
 
 
-# method check if the fist line is string char
+# method check if the fist line is string char or floats
 proc isStartWIthString { line } {
     set doubleValue "null"
     regexp {[0-9]+\.[0-9]+} $line doubleValue
@@ -31,12 +31,28 @@ proc isStartWIthString { line } {
     }
     return 0;
 }
+
+# method to check if the line containe int value
 proc isPresentInteger { line } {
     set int "null"
     regexp {(?:^|[^0-9.])(\d+)(?!\.?\d)} $line int
     if { $int == "null" } {
         return 0
     }
+    return 1
+}
+
+# methode to check if the line contain string Characters
+proc isContaningString { line } {
+    global StringLine;
+    set string "null"
+    regexp {[A-Za-z]} $line string
+    if { $string == "null" } {
+        return 0
+    }
+    incr StringLine;
+    setMinimumNonEmptyLineLength $line;
+
     return 1
 
 }
@@ -76,7 +92,7 @@ proc setSumFirstTwoInt { valueOfLineAsInteger } {
     }
 }
 
-proc setModulusOfIntegerValue { valueOfLineAsInteger } {
+proc setPrimeIntegerValue { valueOfLineAsInteger } {
     global primeNumberLine;
     global nonPrimeNumber;
     if {[isPrime $valueOfLineAsInteger]} {
@@ -95,12 +111,24 @@ proc setLineValue { line } {
     set lengthValueOfLine [string length $valueOfLineAsString];    
     if {$lengthValueOfLine > 0 } {
         # to convert to int
-        scan $valueOfLineAsString %d valueOfLineAsInteger  
+        # scan $valueOfLineAsString %d valueOfLineAsInteger  
+       set RE {([-+]?[0-9]*\.?[0-9]*)}
+
+        set matches [regexp -all -inline -- $RE $line]
+        foreach {- valueOfLineAsInteger} $matches {
+            if {$valueOfLineAsInteger != ""} {
+            puts $valueOfLineAsInteger
+            SetMaxValue $valueOfLineAsInteger $line;
+            setSumFirstTwoInt $valueOfLineAsInteger
+            setPrimeIntegerValue $valueOfLineAsInteger ; 
+            }
+        }
+
+         
         # call methods for statstics
-        SetMaxValue $valueOfLineAsInteger $line;
-        setSumFirstTwoInt $valueOfLineAsInteger
+        
         incr LineWithValuCounter
-        setModulusOfIntegerValue $valueOfLineAsInteger ; 
+        
         } else {    incr StringLine}
 }
 
@@ -112,9 +140,9 @@ proc readFile { filename } {
     while { [gets $fp line] >= 0 } {
         if {[isStartWIthString $line] } {
             setFirstThreeString $line;
-            setMinimumNonEmptyLineLength $line;
             puts $line;
         } 
+        isContaningString $line;
         if { [isPresentInteger $line] } {
             
             setLineValue $line;
@@ -123,7 +151,7 @@ proc readFile { filename } {
             puts "INVALID LINE";
             incr invalidLine;
           }    
-        puts "$line [string length $line] ";
+        puts "$line . [string length $line] ";
     }
   close $fp; 
 }
@@ -136,18 +164,12 @@ set filename input.txt;
 set fexist [file exist $filename];
 if { $fexist == 1 } {
 
-set string "This is a double value: 4.4 8 "
-regexp {(?:^|[^0-9.])(\d+)(?!\.?\d)} $string int
-
-set doubleValue null
-regexp {[0-9]+\.[0-9]+} $string doubleValue
-puts " valu $doubleValue $int"
 
     readFile $filename ;
 }
 
 # report 
-puts "number of StringLine : $StringLine";
+puts "number of line that containing string : $StringLine";
 puts "number of primeNumberLine : $primeNumberLine";
 puts "number of nonPrimeNumber : $nonPrimeNumber";
 puts "number of invalidLine : $invalidLine";
