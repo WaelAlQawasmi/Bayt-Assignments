@@ -11,13 +11,34 @@
  set LineWithMaxValue "";
  set minimumNonEmptyLineLength +infinity;
 
+ proc isPrime { n }  {
+    set max [expr wide(sqrt($n))]
+    if {$n%2==0} { puts "$n  not prime"; return 0;}
+    for {set i 3} {$i<=$max} {incr i 2} {
+        if {$n%$i==0} {  puts "$n  not prime"; return 0}
+    }
+    puts "$n prime";
+    return 1
+}
+
+
 # method check if the fist line is string char
 proc isStartWIthString { line } {
-    
-    if { [string match -nocase {[A-Za-z]*} $line] } {
+    set doubleValue "null"
+    regexp {[0-9]+\.[0-9]+} $line doubleValue
+    if { [string match -nocase {[A-Za-z]*} $line] || $doubleValue != "null"} {
         return 1;
     }
     return 0;
+}
+proc isPresentInteger { line } {
+    set int "null"
+    regexp {(?:^|[^0-9.])(\d+)(?!\.?\d)} $line int
+    if { $int == "null" } {
+        return 0
+    }
+    return 1
+
 }
 # concatenation of the first 3 lines starting with the string characters
 proc setFirstThreeString { line } { 
@@ -58,11 +79,10 @@ proc setSumFirstTwoInt { valueOfLineAsInteger } {
 proc setModulusOfIntegerValue { valueOfLineAsInteger } {
     global primeNumberLine;
     global nonPrimeNumber;
-    set ModulusOfIntegerValue [expr "$valueOfLineAsInteger%2"];
-    if {$ModulusOfIntegerValue == 1 } {
+    if {[isPrime $valueOfLineAsInteger]} {
         incr primeNumberLine;
         puts [expr "$valueOfLineAsInteger/2"]
-        } elseif { $ModulusOfIntegerValue == 0 } {
+        } else {
                 puts [expr "$valueOfLineAsInteger*3.25"];
                 incr nonPrimeNumber;}
 }
@@ -92,10 +112,14 @@ proc readFile { filename } {
     while { [gets $fp line] >= 0 } {
         if {[isStartWIthString $line] } {
             setFirstThreeString $line;
-            puts $line;
             setMinimumNonEmptyLineLength $line;
+            puts $line;
+        } 
+        if { [isPresentInteger $line] } {
+            
             setLineValue $line;
-        } else {
+        } 
+        if {![isStartWIthString $line] && ![isPresentInteger $line] } {
             puts "INVALID LINE";
             incr invalidLine;
           }    
@@ -111,6 +135,14 @@ set filename input.txt;
 # check if the file exist then read file
 set fexist [file exist $filename];
 if { $fexist == 1 } {
+
+set string "This is a double value: 4.4 8 "
+regexp {(?:^|[^0-9.])(\d+)(?!\.?\d)} $string int
+
+set doubleValue null
+regexp {[0-9]+\.[0-9]+} $string doubleValue
+puts " valu $doubleValue $int"
+
     readFile $filename ;
 }
 
