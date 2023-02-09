@@ -44,17 +44,16 @@ proc isPresentInteger { line } {
 
 # methode to check if the line contain string Characters
 proc isContaningString { line } {
-    global StringLine;
-    set string "null"
-    regexp {[A-Za-z]} $line string
-    if { $string == "null" } {
-        return 0
-    }
-    incr StringLine;
-    setMinimumNonEmptyLineLength $line;
+    global StringLine
+    set length [string length $line];
+   if { $length > 0 } {
+         incr StringLine;
+        setMinimumNonEmptyLineLength $line;
+         return 1
 
-    return 1
-
+   }
+   return 0
+   
 }
 # concatenation of the first 3 lines starting with the string characters
 proc setFirstThreeString { line } { 
@@ -110,6 +109,7 @@ proc setLineValue { line } {
  
         set RE {([-+]?[0-9]*\.?[0-9]*)}
         set matches [regexp -all -inline -- $RE $line]
+        
         foreach {- valueOfLineAsInteger} $matches {
             if {$valueOfLineAsInteger != ""} {
                 SetMaxValue $valueOfLineAsInteger $line;
@@ -117,8 +117,7 @@ proc setLineValue { line } {
                 setPrimeIntegerValue $valueOfLineAsInteger ; 
             }
         }        
-        incr LineWithValuCounter
-             
+        incr LineWithValuCounter             
 }
 
 proc readFile { filename } {
@@ -129,20 +128,20 @@ proc readFile { filename } {
     while { [gets $fp line] >= 0 } {
         if {[isStartWIthString $line] } {
             setFirstThreeString $line;
-            puts $line;
         } 
+        puts $line;
         isContaningString $line;
         if { [isPresentInteger $line] } {
-            
             setLineValue $line;
         } 
         if {![isStartWIthString $line] && ![isPresentInteger $line] } {
-            puts "INVALID LINE";
+            
             incr invalidLine;
+            puts "INVALID LINE  ^ ";
           }    
         puts "$line . [string length $line] ";
     }
-  close $fp; 
+    close $fp; 
 }
 
 
@@ -152,7 +151,6 @@ set filename input.txt;
 # check if the file exist then read file
 set fexist [file exist $filename];
 if { $fexist == 1 } {
-
 
     readFile $filename ;
 }
