@@ -107,29 +107,18 @@ proc setPrimeIntegerValue { valueOfLineAsInteger } {
 proc setLineValue { line } {
     global StringLine
     global LineWithValuCounter
-    set valueOfLineAsString [regexp -all -inline -- {[0-9]+} $line];
-    set lengthValueOfLine [string length $valueOfLineAsString];    
-    if {$lengthValueOfLine > 0 } {
-        # to convert to int
-        # scan $valueOfLineAsString %d valueOfLineAsInteger  
-       set RE {([-+]?[0-9]*\.?[0-9]*)}
-
+ 
+        set RE {([-+]?[0-9]*\.?[0-9]*)}
         set matches [regexp -all -inline -- $RE $line]
         foreach {- valueOfLineAsInteger} $matches {
             if {$valueOfLineAsInteger != ""} {
-            puts $valueOfLineAsInteger
-            SetMaxValue $valueOfLineAsInteger $line;
-            setSumFirstTwoInt $valueOfLineAsInteger
-            setPrimeIntegerValue $valueOfLineAsInteger ; 
+                SetMaxValue $valueOfLineAsInteger $line;
+                setSumFirstTwoInt $valueOfLineAsInteger
+                setPrimeIntegerValue $valueOfLineAsInteger ; 
             }
-        }
-
-         
-        # call methods for statstics
-        
+        }        
         incr LineWithValuCounter
-        
-        } else {    incr StringLine}
+             
 }
 
 proc readFile { filename } {
