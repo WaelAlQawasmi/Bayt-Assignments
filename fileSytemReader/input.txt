@@ -10,7 +10,7 @@ I leve in jordan in when I was -7 years
 I have -4 brothers
 I love king and jordan -1998
 I have -3 susters
--20 ,126 ,0,1500, -960
+-20 ,126 ,1500, -960 0
 ***
 -5000, 1200000
 

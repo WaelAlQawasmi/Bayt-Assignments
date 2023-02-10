@@ -44,16 +44,17 @@ proc isPresentInteger { line } {
 
 # methode to check if the line contain string Characters
 proc isContaningString { line } {
-    global StringLine
-    set length [string length $line];
-   if { $length > 0 } {
-         incr StringLine;
-        setMinimumNonEmptyLineLength $line;
-         return 1
+    global StringLine;
+    set string "null"
+    regexp {[A-Za-z]} $line string
+    if { $string == "null" } {
+        return 0
+    }
+    incr StringLine;
+    setMinimumNonEmptyLineLength $line;
 
-   }
-   return 0
-   
+    return 1
+
 }
 # concatenation of the first 3 lines starting with the string characters
 proc setFirstThreeString { line } { 
@@ -92,32 +93,49 @@ proc setSumFirstTwoInt { valueOfLineAsInteger } {
 }
 
 proc setPrimeIntegerValue { valueOfLineAsInteger } {
-    global primeNumberLine;
-    global nonPrimeNumber;
+   
     if {[isPrime $valueOfLineAsInteger]} {
-        incr primeNumberLine;
+       
         puts [expr "$valueOfLineAsInteger/2"]
+        return 1
         } else {
                 puts [expr "$valueOfLineAsInteger*3.25"];
-                incr nonPrimeNumber;}
+                incr nonPrimeNumber;
+                return 0}
 }
 
 # method to get the value in the line 
 proc setLineValue { line } {
-    global StringLine
+    
     global LineWithValuCounter
+    global primeNumberLine;
+    global nonPrimeNumber;
  
-        set RE {([-+]?[0-9]*\.?[0-9]*)}
-        set matches [regexp -all -inline -- $RE $line]
-        
-        foreach {- valueOfLineAsInteger} $matches {
-            if {$valueOfLineAsInteger != ""} {
-                SetMaxValue $valueOfLineAsInteger $line;
-                setSumFirstTwoInt $valueOfLineAsInteger
-                setPrimeIntegerValue $valueOfLineAsInteger ; 
+    set RE {([-+]?[0-9]*\.?[0-9]*)}
+    set matches [regexp -all -inline -- $RE $line]
+    set visitPrime 0;
+    set visitNonPrime 0;
+    foreach {- valueOfLineAsInteger} $matches {
+        if {$valueOfLineAsInteger != ""} {
+            SetMaxValue $valueOfLineAsInteger $line;
+            setSumFirstTwoInt $valueOfLineAsInteger
+            setPrimeIntegerValue $valueOfLineAsInteger ; 
+            # if the  line contain  prime number  will incress  primeNumberLine just by one we creat visit to prevent daplecate incresing in case the line contain milti prime and non prime
+                
+            if { [setPrimeIntegerValue $valueOfLineAsInteger] && ! $visitPrime } {
+                set visitPrime 1;
+                incr primeNumberLine;
             }
-        }        
-        incr LineWithValuCounter             
+            if { ! [setPrimeIntegerValue $valueOfLineAsInteger] && ! $visitNonPrime } {
+                    set visitNonPrime 1;
+                    incr nonPrimeNumber;
+            }
+                 
+        }
+               
+    }
+
+    incr LineWithValuCounter             
 }
 
 proc readFile { filename } {
