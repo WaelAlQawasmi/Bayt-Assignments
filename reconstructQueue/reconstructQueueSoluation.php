@@ -14,7 +14,7 @@ class reconstructQueueSoluation {
     }
 
     // method to sorted based on hight
-    public function SortQueueBasedOnHight($people) {
+    private function SortQueueBasedOnHight($people) {
 
         usort($people, function ($a, $b) {
             if ($a[0] == $b[0]) {
@@ -31,7 +31,7 @@ class reconstructQueueSoluation {
     }
     
     // method to picking the max height first
-    public  function maxHeightFirst($hightSortedPeople) {
+    private  function maxHeightFirst($hightSortedPeople) {
 
         $res= [];
         foreach($hightSortedPeople as $person){
