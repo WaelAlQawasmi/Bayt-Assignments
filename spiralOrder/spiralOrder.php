@@ -45,10 +45,10 @@ class spiralOrderSoluation{
         }
     }
 
-    // Traverse  up left to down method
-    function leftToUpTraverse($Input_array){
-        for ($i=$this->starting_col; $i <= $this->final_col; $i++) { 
-        array_push($this->result_array, $Input_array[$this->starting_row][$i]);
+    // Traverse  up to left method
+    function upToLeftTraverse($Input_array){
+        for ($i=$this->starting_row; $i <= $this->final_row; $i++) { 
+        array_push($this->result_array, $Input_array[$i][$this->final_col]);
         }
     }
     // method to Traverse from  right to left 

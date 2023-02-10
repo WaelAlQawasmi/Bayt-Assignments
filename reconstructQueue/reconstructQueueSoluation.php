@@ -9,7 +9,6 @@ class reconstructQueueSoluation {
         $hightSortedPeople= $this->SortQueueBasedOnHight($people);
         // This to add people at the index , picking the max height first
         $result= $this->maxHeightFirst($hightSortedPeople) ;
-
         return $result;
     }
 
@@ -23,11 +22,8 @@ class reconstructQueueSoluation {
             else{
                 return  $b[0]-$a[0];
             }
-           
         });
- 
         return $people;
- 
     }
     
     // method to picking the max height first
@@ -35,19 +31,16 @@ class reconstructQueueSoluation {
 
         $res= [];
         foreach($hightSortedPeople as $person){
-            rray_splice($res,$person[1],0,array($person));
+            array_splice($res,$person[1],0,array($person));
         }
       
         return $res;
     }
 
-
-    
-
 }
 
 
-// test case
+// test case should output [[4,0],[5,0],[2,2],[3,2],[1,4],[6,0]]
 $people= [[6,0],[5,0],[4,0],[3,2],[2,2],[1,4]];
 $class=new reconstructQueueSoluation();
 print_r($class->reconstructQueue($people));
