@@ -1,11 +1,11 @@
 <?php
 class spiralOrderSoluation{
 
-    public $result_array=[]; 
-    public $starting_col=0;
-    public $final_col;
-    public $starting_row=0;
-    public $final_row;
+    private $result_array=[]; 
+    private $starting_col=0;
+    private $final_col;
+    private $starting_row=0;
+    private $final_row;
 
     // function return all elements of the matrix in spiral order.
 

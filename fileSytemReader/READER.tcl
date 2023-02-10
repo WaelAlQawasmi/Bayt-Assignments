@@ -26,7 +26,8 @@
 proc isStartWIthString { line } {
     set doubleValue "null"
     regexp {[0-9]+\.[0-9]+} $line doubleValue
-    if { [string match -nocase {[A-Za-z]*} $line] || $doubleValue != "null"} {
+    set length [string length $line];
+    if { $length > 0 || $doubleValue != "null"} {
         return 1;
     }
     return 0;
@@ -44,17 +45,16 @@ proc isPresentInteger { line } {
 
 # methode to check if the line contain string Characters
 proc isContaningString { line } {
-    global StringLine;
-    set string "null"
-    regexp {[A-Za-z]} $line string
-    if { $string == "null" } {
-        return 0
-    }
-    incr StringLine;
-    setMinimumNonEmptyLineLength $line;
+    global StringLine
+    set length [string length $line];
+    if { $length > 0 } {
+         incr StringLine;
+        setMinimumNonEmptyLineLength $line;
+         return 1
 
-    return 1
-
+   }
+   return 0
+   
 }
 # concatenation of the first 3 lines starting with the string characters
 proc setFirstThreeString { line } { 
@@ -119,14 +119,13 @@ proc setLineValue { line } {
         if {$valueOfLineAsInteger != ""} {
             SetMaxValue $valueOfLineAsInteger $line;
             setSumFirstTwoInt $valueOfLineAsInteger
-            setPrimeIntegerValue $valueOfLineAsInteger ; 
             # if the  line contain  prime number  will incress  primeNumberLine just by one we creat visit to prevent daplecate incresing in case the line contain milti prime and non prime
-                
-            if { [setPrimeIntegerValue $valueOfLineAsInteger] && ! $visitPrime } {
+            set isPrime [setPrimeIntegerValue $valueOfLineAsInteger];
+            if { $isPrime && ! $visitPrime } {
                 set visitPrime 1;
                 incr primeNumberLine;
             }
-            if { ! [setPrimeIntegerValue $valueOfLineAsInteger] && ! $visitNonPrime } {
+            if { ! $isPrime && ! $visitNonPrime } {
                     set visitNonPrime 1;
                     incr nonPrimeNumber;
             }
@@ -134,7 +133,7 @@ proc setLineValue { line } {
         }
                
     }
-
+            
     incr LineWithValuCounter             
 }
 
